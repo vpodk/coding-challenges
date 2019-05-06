@@ -10,7 +10,6 @@ Include the steps to build and run your program.
 # Solution #2
 
 ```bash
-cd www
 python3 server.py
 ```
 

@@ -30,6 +30,5 @@ Also
 # Solution #1
 
 ```bash
-cd lib
 python3 jobs.py jobs.txt
 ```
