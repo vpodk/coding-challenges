@@ -92,7 +92,8 @@ def main():
         # https://docs.python.org/3/library/threading.html#threading.Lock
         SESSION['locker'] = threading.Lock()
         SESSION['threads'] = threads or 1
-        SESSION['jobs'] = parse(open(filepath, 'r'))
+        with open(filepath, 'r') as fp:
+            SESSION['jobs'] = parse(fp)
         run()
     else:
         print('Usage: %s [-t #] file' % __file__)
