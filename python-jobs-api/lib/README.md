@@ -25,3 +25,11 @@ simultaneous running jobs as an argument to the program.
 Also
 - If you need external libraries, include their source code.
 - Include the steps to build your program.
+
+
+# Solution #1
+
+```bash
+cd lib
+python3 jobs.py jobs.txt
+```
