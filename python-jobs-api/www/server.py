@@ -13,13 +13,14 @@ sys.path.insert(1, './../lib')
 import jobs
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from io import BytesIO, StringIO
+from io import StringIO
 
 QUEUE = {}
 
 
 class ApiHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
+        """Handles HTTP GET requests."""
         is_html = self.path == '/'
         content_type = 'text/html' if is_html else 'application/json'
 
@@ -41,6 +42,7 @@ class ApiHTTPRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(output.encode())
 
     def do_POST(self):
+        """Handles HTTP POST requests."""
         content_length = int(self.headers['Content-Length'])
         body = self.rfile.read(content_length)
         self.send_response(200)
@@ -54,15 +56,23 @@ class ApiHTTPRequestHandler(BaseHTTPRequestHandler):
 
 
 def _create_jobs(body):
-    response = BytesIO()
-    response.write(body)
-    output = response.getvalue()
+    """Creates new job.
 
-    if output[:5] == b'file=':  # Strip form field name.
-        output = output[5:]
+    Args:
+        body: The HTTP POST body.
 
-    output = urllib.parse.unquote_plus(output.decode())
-    jobs.SESSION['jobs'] = jobs.parse(StringIO(output))
+    Returns:
+        An identifier of created job.
+
+    See:
+        https://docs.python.org/3/library/threading.html#threading.Thread
+        https://docs.python.org/3/library/io.html#text-i-o
+    """
+    if body[:5] == b'file=':  # Strip form field name.
+        body = body[5:]
+
+    body = urllib.parse.unquote_plus(body.decode())
+    jobs.SESSION['jobs'] = jobs.parse(StringIO(body))
     jobs.SESSION['locker'] = threading.Lock()
 
     thread = threading.Thread(target=jobs.run)
@@ -73,16 +83,23 @@ def _create_jobs(body):
 
 
 def _get_job_status(job_id):
+    """Gets job status by job Id.
+
+    Args:
+        job_id: Job Id to get status.
+
+    Returns:
+        A job status. 200 - Ok, 404 - Not Found.
+
+    See:
+        https://docs.python.org/3/library/threading.html#threading.Thread.join
+    """
     thread = QUEUE.get(job_id)
     if thread:
         thread.join()
-        return '200'
-    return '404'
+        return 200
+    return 404
 
 
-def main(server_class=HTTPServer, handler_class=ApiHTTPRequestHandler):
-    server_class(('', 8000), handler_class).serve_forever()
-
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    HTTPServer(('', 8000), ApiHTTPRequestHandler).serve_forever()

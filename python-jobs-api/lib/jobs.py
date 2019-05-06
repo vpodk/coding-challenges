@@ -99,5 +99,5 @@ def main():
         print('Usage: %s [-t #] file' % __file__)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
