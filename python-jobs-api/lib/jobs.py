@@ -8,52 +8,44 @@ import subprocess
 import sys
 import threading
 
-SESSION = {'running': 0}
+SESSION = {'running': 0, 'threads': 1}
 
 
-def _parse(filepath):
-    """Parses input file.
+def parse(fo):
+    """Parses file-like or file object.
+
+    Also this method is used in API classes as an imported library.
 
     Args:
-        filepath: The file path to parse.
+        fo: The file-like or file object to parse.
 
     Returns:
-        A dict with jobs found in file.
+        A dict with jobs found.
+
+    See:
+        https://docs.python.org/3/glossary.html#term-file-object
     """
     jobs = {}
     job_id = None
 
-    with open(filepath, 'r') as fp:
-        for line in fp:
-            line = line.strip()
-            if line[:6] == 'job_id':
-                job_id = line[7:]
-                jobs[job_id] = {'job_id': job_id, 'complete': False}
-            elif line[:7] == 'program':
-                jobs[job_id]['program'] = line[8:]
-            elif line[:14] == 'parent_job_ids':
-                jobs[job_id]['parents'] = line[15:].split(' ')
+    for line in fo:
+        line = line.strip()
+        if line[:6] == 'job_id':
+            job_id = line[7:]
+            jobs[job_id] = {'job_id': job_id, 'complete': False}
+        elif line[:7] == 'program':
+            jobs[job_id]['program'] = line[8:]
+        elif line[:14] == 'parent_job_ids':
+            jobs[job_id]['parents'] = line[15:].split(' ')
 
     return jobs
 
 
-def _exec(job):
-    """Executes job command.
+def run():
+    """Runs all jobs.
 
-    Args:
-        job: The job object with the command to execute.
-
-    See:
-        https://docs.python.org/3/library/os.html#os.system
+    Also this method is used in API classes as an imported library.
     """
-    os.system(job['program'])
-    job['complete'] = True
-    SESSION['running'] -= 1
-    _run()
-
-
-def _run():
-    """Runs all jobs."""
     SESSION['locker'].acquire()
     jobs = SESSION['jobs']
 
@@ -72,6 +64,21 @@ def _run():
     SESSION['locker'].release()
 
 
+def _exec(job):
+    """Executes job command.
+
+    Args:
+        job: The job object with the command to execute.
+
+    See:
+        https://docs.python.org/3/library/os.html#os.system
+    """
+    os.system(job['program'])
+    job['complete'] = True
+    SESSION['running'] -= 1
+    run()
+
+
 def main():
     filepath = None
     threads = None
@@ -85,8 +92,8 @@ def main():
         # https://docs.python.org/3/library/threading.html#threading.Lock
         SESSION['locker'] = threading.Lock()
         SESSION['threads'] = threads or 1
-        SESSION['jobs'] = _parse(filepath)
-        _run()
+        SESSION['jobs'] = parse(open(filepath, 'r'))
+        run()
     else:
         print('Usage: %s [-t #] file' % __file__)
 
