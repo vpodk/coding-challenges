@@ -36,8 +36,7 @@ class ApiHTTPRequestHandler(BaseHTTPRequestHandler):
             match = re.match(r'^/jobs/(\w+)', self.path)
             if match:
                 job_id = match.group(1)
-                print('job_id: %s' % job_id)
-                output = json.dumps({'status': _get_job(job_id)})
+                output = json.dumps({'status': _get_job_status(job_id)})
 
         self.wfile.write(output.encode())
 
@@ -73,7 +72,7 @@ def _create_jobs(body):
     return str(thread.ident)
 
 
-def _get_job(job_id):
+def _get_job_status(job_id):
     thread = QUEUE.get(job_id)
     if thread:
         thread.join()
