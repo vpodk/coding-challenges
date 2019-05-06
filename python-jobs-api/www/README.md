@@ -17,7 +17,7 @@ python3 server.py
 
 | HTTP request         | Description   |
 | -------------------- |---------------|
-| `GET /`              | Shows test HTML [page](www/index.html). |
+| `GET /`              | Shows test HTML [page](index.html). |
 | `GET /jobs`          | Gets list of all jobs. |
 | `POST /jobs`         | Creates a new job. |
 | `GET /jobs/{job_id}` | Gets job status. |
