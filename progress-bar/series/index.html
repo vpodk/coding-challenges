@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
+<title>Progress bar</title>
+<style>
+.bar-container {
+  background-color: gray;
+  height: 30px;
+  margin: 40px;
+  max-width: 80%;
+  width: 400px;
+}
+
+.bar-container div {
+  background-color: green;
+  height: 100%;
+  width: 0;
+}
+
+.bar-container div::before {
+  color: white;
+  content: attr(data-progress);
+  padding: 6px;
+  position: absolute;
+  text-shadow: 1px 1px DarkSlateGray;
+}
+</style>
+</head>
+<body>
+<div id="container"></div>
+
+<script>
+function initProgress() {
+  var timeouts = Array.prototype.slice.call(arguments);
+  var length = timeouts.length;
+  var container = document.getElementById('container');
+  var nodes = [];
+
+  for (var i = 0; i < length; i++) {
+    var node = container.appendChild(document.createElement('DIV'));
+    var child = node.appendChild(document.createElement('DIV'));
+    node.className = 'bar-container';
+    nodes.push(node);
+    // Runs in parallel
+    // startProgress(node, timeouts.shift());
+  }
+
+  function run() {
+    var node = nodes.shift();
+    if (node) {
+      startProgress(node, timeouts.shift(), run);
+    }
+  }
+  // Runs consistently
+  run();
+}
+
+function startProgress(node, timeout, callback) {
+  var startTime;
+  var maxWidth = node.scrollWidth;
+  var duration = timeout * 1000;
+  var child = node.firstChild;
+
+  function run(timestamp) {
+    if (!startTime) startTime = timestamp;
+    var runtime = timestamp - startTime;
+    var progress = Math.min(runtime / duration, 1);
+
+    child.style.width = (maxWidth * progress).toFixed(2) + 'px';
+    child.setAttribute('data-progress', Math.ceil(child.scrollWidth / maxWidth * 100) + '%');
+
+    if (runtime < duration) {
+      requestAnimationFrame(run);
+    } else if (callback) {
+      callback();
+    }
+  }
+
+  requestAnimationFrame(run);
+}
+
+// 1. from 0 to 100 in 5 sec
+// 2. from 0 to 100 in 10 sec
+// 2. from 0 to 100 in 15 sec
+initProgress(5, 10, 15);
+
+</script>
+</body>
+</html>

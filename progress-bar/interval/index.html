@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
+<title>Progress bar</title>
+<style>
+.bar-container {
+  background-color: gray;
+  height: 30px;
+  margin: 40px;
+  max-width: 80%;
+  width: 400px;
+}
+
+.bar-container div {
+  background-color: green;
+  height: 100%;
+  width: 0;
+}
+
+.controls {
+  margin: 0 40px;
+}
+</style>
+</head>
+<body>
+
+<div class="bar-container">
+  <div id="bar"></div>
+</div>
+
+<div class="controls">
+  <input type="number" min="1" max="60" value="5" id="seconds">
+  <button onClick="startProgress(document.getElementById('seconds').value)">Start</button>
+</div>
+
+<script>
+let timer;
+const startProgress = (seconds) => {
+  const duration = seconds * 1000;
+  const start = +new Date;
+  const fps = 60;
+
+  timer && clearInterval(timer);
+  timer = setInterval(() => {
+    const elapsed = +new Date - start;
+    let width = 0;
+
+    if (elapsed < duration) {
+      width = elapsed / duration * 100;
+    } else {
+      clearInterval(timer);
+      width = 100;
+    }
+
+    bar.style.width = width + '%';
+
+  }, 1000 / fps);
+}
+
+</script>
+</body>
+</html>
