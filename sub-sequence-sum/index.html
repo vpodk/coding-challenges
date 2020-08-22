@@ -1,0 +1,91 @@
+<script>
+/**
+ * Gets the sum of the largest sub-sequence in the specified list.
+ *
+ * @see https://google.github.io/styleguide/jsguide.html
+ */
+
+
+/**
+ * Runs predefined tests for the specified function.
+ * @param {!fn(!Array<number>)} fn The function to test.
+ */
+const runTests = (fn) => {
+  const tests = [
+    // input, expected result
+    [[1, 2, 3], 6],
+    [[1, 3], 4],
+    [[1, -5], 1],
+    [[1, 6, 2, 3, -5], 12],
+    [[2, 3, -10, 2, 5], 7],
+    [[1, -3, -10, 2, -5], 2],
+    [[1, -3, -10, -2, -5], 1],
+    [[-1, -3, -10, -2, -5], -1],
+    [[0, -3, -10, -2, -5], 0],
+    [[4, -2, 3], 5],
+    [[0, 0, 0], 0],
+  ];
+
+  console.time();
+  tests.forEach(test => {
+    const result = fn(test[0]);
+    const expect = test[1];
+    console.assert(result === expect, test[0].join(', ') + ' => ' + expect, result);
+    console.log(result === expect, test[0].join(', ') + ' => ' + expect, result);
+  });
+  console.timeEnd();
+};
+
+(function() {
+  /**
+   * Gets the sum of the largest sub-sequence in the specified list.
+   * @param {!Array<number>} list A list of integers.
+   * @return {number} Returns the largest sub-sequence sum.
+   */
+  const getLargestSubSequence = (list) => {
+    let /** number */ result = Math.max(...list);
+    let /** number */ maxEnd = 0;
+
+    for (let i = 0; i < list.length; ++i) {
+      maxEnd += list[i];
+
+      if (result < maxEnd) {
+        result = maxEnd;
+      }
+
+      if (maxEnd < 0) {
+        maxEnd = 0;
+      }
+    }
+
+    return result;
+  };
+
+  runTests(getLargestSubSequence);
+})();
+
+
+(function() {
+  /**
+   * Gets the sum of the largest sub-sequence in the specified list.
+   * @param {!Array<number>} list A list of integers.
+   * @return {number} Returns the largest sub-sequence sum.
+   * @see https://en.wikipedia.org/wiki/Maximum_subarray_problem
+   */
+  const getLargestSubSequence = (list) => {
+    let /** number */ result = Math.max(...list);
+    let /** number */ maxEnd = 0;
+
+    for (let i = 0; i < list.length; ++i) {
+      maxEnd = Math.max(maxEnd + list[i], Number.MIN_SAFE_INTEGER);
+      result = Math.max(maxEnd, result);
+
+      if (maxEnd < 0) maxEnd = 0;
+    }
+
+    return result;
+  };
+
+  runTests(getLargestSubSequence);
+})();
+</script>

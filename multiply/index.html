@@ -1,0 +1,92 @@
+<script>
+/**
+ * Multiples two number without using multiplication and division operators.
+ *
+ * @see https://google.github.io/styleguide/jsguide.html
+ */
+
+
+/**
+ * Runs predefined tests for the specified function.
+ * @param {!fucntion(number, number)} multiply The multiply function.
+ */
+const runTests = (multiply) => {
+  const tests = [
+    [5, 5],
+    [6, 6],
+    [0, 9],
+    [0, 0],
+    [9, 0],
+    [-5, -5],
+    [2, -5],
+    [20, 1],
+
+    [Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000)],
+    [-Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000)],
+    [-Math.floor(Math.random() * 1000), -Math.floor(Math.random() * 1000)],
+  ];
+
+  console.time();
+  tests.forEach(test => {
+    const expect = test.reduce((a, b) => a * b);
+    const result = multiply.apply(null, test);
+    console.assert(result === expect, test.join(' * ') + ' = ' + expect, result);
+    // console.log(result === expect, test.join(' * ') + ' = ' + expect, result);
+  });
+  console.timeEnd();
+};
+
+
+(function() {
+
+  /**
+   * Multiples two number without using multiplication and division operators.
+   * @param {number} multiplicand A quantity that gets multiplied by multiplier.
+   * @param {number} multiplier A quantity by which a given number gets multiplied.
+   * @return {number} Returns a product of two given numbers.
+   * @see https://en.wikipedia.org/wiki/Multiplication
+   * @see https://en.wikipedia.org/wiki/Product_(mathematics)
+   * @see https://medium.com/swlh/understanding-big-o-ff675cf63e11
+   * @see https://medium.com/javascript-in-plain-english/ab2144fcbe
+   */
+  const multiply = (multiplicand, multiplier) => {
+    let result = 0;
+    const abs = 0 <= multiplier ? multiplier : -multiplier; // Math.abs(multiplier)
+
+    for (let i = 0; i < abs; ++i) {
+      result += multiplicand;
+    }
+
+    return 0 <= multiplier ? result : -result;
+  };
+
+  runTests(multiply);
+})();
+
+
+(function() {
+  /**
+   * Multiples two number without using multiplication and division operators.
+   * @param {number} multiplicand A quantity that gets multiplied by multiplier.
+   * @param {number} multiplier A quantity by which a given number gets multiplied.
+   * @return {number} Returns a product of two given numbers.
+   * @see https://en.wikipedia.org/wiki/Multiplication
+   * @see https://en.wikipedia.org/wiki/Product_(mathematics)
+   * @see https://medium.com/swlh/understanding-big-o-ff675cf63e11
+   * @see https://medium.com/javascript-in-plain-english/ab2144fcbe
+   */
+  const multiply = (multiplicand, multiplier) => {
+    if (0 === multiplier || 0 === multiplicand)
+      return 0;
+
+    if (1 === multiplier)
+      return multiplicand;
+
+    return 0 < multiplier ?
+        multiply(multiplicand, multiplier - 1) + multiplicand :
+        -multiply(multiplicand, -multiplier);
+  };
+
+  runTests(multiply);
+})();
+</script>
