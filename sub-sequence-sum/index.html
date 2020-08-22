@@ -77,7 +77,7 @@ const runTests = (fn) => {
     let /** number */ maxEnd = 0;
 
     for (let i = 0; i < list.length; ++i) {
-      maxEnd = Math.max(maxEnd + list[i], Number.MIN_SAFE_INTEGER);
+      maxEnd += list[i];
       result = Math.max(maxEnd, result);
 
       if (maxEnd < 0) maxEnd = 0;
