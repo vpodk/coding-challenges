@@ -1,0 +1,153 @@
+<script>
+/**
+ * Move all zeros to end of array. Keep the order in the array.
+ *
+ * @see https://google.github.io/styleguide/jsguide.html
+ */
+
+
+/**
+ * Runs predefined tests for the specified function.
+ * @param {!fn(!Array<number>)} fn The function to test.
+ */
+const runTests = (fn) => {
+  const tests = [
+    [
+      [1, 0, 3, 0, -2],
+      [1, 3, -2, 0, 0],
+    ],
+    [
+      [1, 2, 0, 4, 3, 0, 5, 0],
+      [1, 2, 4, 3, 5, 0, 0, 0],
+    ],
+    [
+      [1, 2, 0, 0, 0, 3, 6],
+      [1, 2, 3, 6, 0, 0, 0],
+    ]
+  ];
+
+  console.time();
+  tests.forEach((test, index) => {
+    const input = [].concat(test[0]);
+    const result = fn(input).join(', ');
+    const expect = test[1].join(', ');
+    console.assert(result === expect, test[0].join(', ') + ' => ' + expect, result);
+    console.log(index, result === expect, test[0].join(', ') + ' => ' + expect, result);
+  });
+  console.timeEnd();
+};
+
+
+(function() {
+  const moveZerosToEnd = (arr) => {
+    const result = [];
+    const zeros = [];
+
+    if (arr) {
+      for (let i = 0; i < arr.length; ++i) {
+        (0 === arr[i] ? zeros : result).push(arr[i]);
+      }
+    }
+
+    return result.concat(zeros);
+  };
+
+  runTests(moveZerosToEnd);
+})();
+
+
+(function() {
+  // An issue with the edge case, when several zeros in a row.
+  const moveZerosToEnd = (arr) => {
+    if (arr) {
+      for (let i = 0; i < arr.length; ++i) {
+        if (0 === arr[i]) {
+          arr.push(0);
+          arr.splice(i, 1);
+        }
+      }
+    }
+
+    return arr;
+  };
+
+  runTests(moveZerosToEnd);
+})();
+
+
+(function() {
+  const moveZerosToEnd = (arr) => {
+    if (arr) {
+      let counter = 0;
+
+      for (let i = 0; i < arr.length; ++i) {
+        if (0 !== arr[i]) {
+          arr[counter++] = arr.splice(i, 1, arr[counter])[0];
+        }
+      }
+    }
+
+    return arr;
+  };
+
+  runTests(moveZerosToEnd);
+})();
+
+
+(function() {
+  const moveZerosToEnd = (arr) => {
+    const zeros = arr.filter(number => 0 == number);
+    const result = arr.filter(number => 0 != number);
+
+    return result.concat(zeros);
+  };
+
+  runTests(moveZerosToEnd);
+})();
+
+
+(function() {
+  const moveZerosToEnd = (arr) => {
+    if (arr) {
+      const length = arr.length;
+      let counter = 0;
+
+      for (let i = 0; i < length; ++i) {
+        if (0 !== arr[i]) {
+          arr[counter++] = arr[i];
+        }
+      }
+
+      while (counter < length) {
+        arr[counter++] = 0;
+      }
+    }
+
+    return arr;
+  };
+
+  runTests(moveZerosToEnd);
+})();
+
+
+(function() {
+  const moveZerosToEnd = (arr) => {
+    if (arr) {
+      let counter = 0;
+
+      for (let i = 0; i < arr.length; ++i) {
+        if (0 === arr[i]) {
+          counter++;
+        } else if (0 < counter) {
+          arr[i - counter] = arr[i];
+          arr[i] = 0;
+        }
+      }
+    }
+
+    return arr;
+  };
+
+  runTests(moveZerosToEnd);
+})();
+</script>
